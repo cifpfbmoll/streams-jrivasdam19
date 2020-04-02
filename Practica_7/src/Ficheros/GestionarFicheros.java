@@ -32,8 +32,14 @@ public class GestionarFicheros {
                         File ficheroEntrada = rutaEntrada();
                         File ficheroSalida = rutaSalida();
                         redactarFicheroByte(ficheroEntrada, ficheroSalida);
-                    } catch (IOException ex) {
+                    } catch (IOException excepcion) {
+                        System.out.println("");
                         System.out.println("Error al leer el archivo");
+                        System.out.println("");
+                    } catch (ExcepcionPersonalizada ex) {
+                        System.out.println("");
+                        System.out.println(ex.getMessage());
+                        ex.registrarError(ex.getMessage(),ex);
                     }
                     break;
                 case 2:
@@ -43,10 +49,24 @@ public class GestionarFicheros {
                         redactarFicheroCaracter(ficheroEntrada, ficheroSalida);
                     } catch (IOException ex) {
                         System.out.println("Error al leer el archivo");
+                    } catch (ExcepcionPersonalizada ex) {
+                        System.out.println("");
+                        System.out.println(ex.getMessage());
+                        ex.registrarError(ex.getMessage(),ex);
                     }
                     break;
                 case 3:
-                    // buffers
+                    try {
+                        File ficheroEntrada = rutaEntrada();
+                        File ficheroSalida = rutaSalida();
+                        redactarFicheroLinea(ficheroEntrada, ficheroSalida);
+                    } catch (IOException ex) {
+                        System.out.println("Error al leer el archivo");
+                    } catch (ExcepcionPersonalizada ex) {
+                        System.out.println("");
+                        System.out.println(ex.getMessage());
+                        ex.registrarError(ex.getMessage(),ex);
+                    }
                     break;
                 case 4:
                     salir = true;
@@ -58,19 +78,27 @@ public class GestionarFicheros {
         }
     }
 
-    public static File rutaEntrada() {
+    public static File rutaEntrada() throws ExcepcionPersonalizada {
         Scanner lector = new Scanner(System.in);
         System.out.println("Introduzca el nombre del archivo de entrada.");
         String rutaEntrada = lector.nextLine() + ".txt";
         File ficheroEntrada = new File(rutaEntrada);
+        boolean existe = ficheroEntrada.exists();
+        if (!existe) {
+            throw new ExcepcionPersonalizada(001);
+        }
         return ficheroEntrada;
     }
 
-    public static File rutaSalida() {
+    public static File rutaSalida() throws ExcepcionPersonalizada {
         Scanner lector = new Scanner(System.in);
         System.out.println("Introduzca el nombre del archivo de salida.");
         String rutaSalida = lector.nextLine() + ".txt";
         File ficheroSalida = new File(rutaSalida);
+        boolean existe = ficheroSalida.exists();
+        if (!existe) {
+            throw new ExcepcionPersonalizada(002);
+        }
         return ficheroSalida;
     }
 
@@ -124,10 +152,45 @@ public class GestionarFicheros {
                 writer.write(unCaracter);
             }
         }
-        for (int i=0;i<PIE.length();i++){
+        for (int i = 0; i < PIE.length(); i++) {
             writer.write(PIE.charAt(i));
         }
         reader.close();
         writer.close();
+    }
+
+    public static void redactarFicheroLinea(File entrada, File salida) throws IOException {
+        BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada));
+        BufferedWriter escritorMejorado = new BufferedWriter(new FileWriter(salida));
+        int contador = 0;
+        boolean eof = false;
+        String lineaLeida;
+        escritorMejorado.write(CABECERA, 0, CABECERA.length());
+        while (!eof) {
+            lineaLeida = lectorMejorado.readLine();
+            if (lineaLeida != null) {
+                for (int i = 0; i < lineaLeida.length(); i++) {
+                    if (lineaLeida.charAt(i) == '#') {
+                        lineaLeida = lineaLeida.substring(0, i) + ATRIBUTOPELI[contador]
+                                + lineaLeida.substring(i + 1);
+                        contador++;
+                        if (contador >= ATRIBUTOPELI.length) {
+                            contador = 0;
+                        }
+                    } else if (lineaLeida.charAt(i) == '{') {
+                        lineaLeida = lineaLeida.substring(0, i) + TITULOPELI
+                                + lineaLeida.substring(i + 1);
+                    }
+                }
+                escritorMejorado.write(lineaLeida, 0, lineaLeida.length());
+
+            } else {
+                eof = true;
+            }
+
+        }
+        escritorMejorado.write(PIE, 0, PIE.length());
+        lectorMejorado.close();
+        escritorMejorado.close();
     }
 }
