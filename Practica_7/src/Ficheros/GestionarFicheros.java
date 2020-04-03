@@ -41,7 +41,7 @@ public class GestionarFicheros {
                         System.out.println("");
                         System.out.println(ex.getMessage());
                         ex.registrarError(ex.getMessage(), ex);
-                    } catch (ExcepcionInformativa ex){
+                    } catch (ExcepcionInformativa ex) {
                         System.out.println(ex.getMensaje());
                         rutaSalida();
                     }
@@ -57,7 +57,7 @@ public class GestionarFicheros {
                         System.out.println("");
                         System.out.println(ex.getMessage());
                         ex.registrarError(ex.getMessage(), ex);
-                    }catch (ExcepcionInformativa ex){
+                    } catch (ExcepcionInformativa ex) {
                         System.out.println(ex.getMensaje());
                         rutaSalida();
                     }
@@ -73,7 +73,7 @@ public class GestionarFicheros {
                         System.out.println("");
                         System.out.println(ex.getMessage());
                         ex.registrarError(ex.getMessage(), ex);
-                    }catch (ExcepcionInformativa ex){
+                    } catch (ExcepcionInformativa ex) {
                         System.out.println(ex.getMensaje());
                         rutaSalida();
                     }
@@ -283,7 +283,6 @@ public class GestionarFicheros {
     }
 
     public static void anyadirPeliculas(String textoLeido, ArrayList<Pelicula> listaPeliculas) {
-        //String datosPelicula = "";
         for (String pelicula : separarString(textoLeido, '{')) {
             Pelicula p = new Pelicula();
             int contador = 0;
@@ -316,19 +315,29 @@ public class GestionarFicheros {
                 }
                 contador++;
             }
-            //datosPelicula += p.atributosPelicula();
             listaPeliculas.add(p);
         }
-        //return datosPelicula;
     }
 
     public static void escribirObjetos(ArrayList<Pelicula> listaPeliculas, File ficheroSalida) throws IOException {
         ObjectOutputStream destino = new ObjectOutputStream(new FileOutputStream(ficheroSalida));
-        for (Pelicula p : listaPeliculas) {
-            destino.writeObject(p);
-        }
+        destino.writeObject(listaPeliculas);
         destino.close();
+    }
 
+    public static void leerObjetos(File ficheroEntrada) {
+        ObjectInputStream ois = null;
+        try {
+            ObjectInputStream origen = new ObjectInputStream(new FileInputStream(ficheroEntrada));
+            while (true) {
+                ArrayList<Pelicula> listaPeliculas = (ArrayList<Pelicula>) origen.readObject();
+                origen.close();
+            }
+        } catch (IOException ex) {
+            System.out.println("");
+        } catch (ClassNotFoundException classex) {
+            System.out.println("");
+        }
     }
 
 }

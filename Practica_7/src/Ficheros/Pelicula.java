@@ -40,7 +40,6 @@ public class Pelicula implements Serializable {
         this.director = director;
     }
 
-    
     public String getDuracion() {
         return duracion;
     }
@@ -82,20 +81,19 @@ public class Pelicula implements Serializable {
         this.setReparto(reparto);
         this.setSesion(sesion);
     }
-    
-    public String atributosPelicula(){
-        String atributos="";
-        atributos+="-----"+this.getTitulo()+"-----\n";
-        atributos+="Año: "+this.getAnyo()+"\n";
-        atributos+="Director: "+this.getDirector()+"\n";
-        atributos+="Duración: "+this.getDuracion()+"\n";
-        atributos+="Sinopsis: "+this.getSinopsis()+"\n";
-        atributos+="Reparto: "+this.getReparto()+"\n";
-        atributos+="Sesión: "+this.getSesion()+"\n";
-        return atributos;                
+
+    @Override
+    public String toString() {
+        return "--------------------------------------\n"
+                + "Cartelera de CineFBMoll\n"
+                + "--------------------------------------\n"
+                + "-----" + this.getTitulo() + "-----\n"
+                + "Año: " + this.getAnyo() + "\n"
+                + "Director: " + this.getDirector() + "\n"
+                + "Duración: " + this.getDuracion() + "\n"
+                + "Sinopsis: " + this.getSinopsis() + "\n"
+                + "Reparto: " + this.getReparto() + "\n"
+                + "Sesión: " + this.getSesion() + "\n" + "--------------------------";
     }
-
-   
-
 
 }
