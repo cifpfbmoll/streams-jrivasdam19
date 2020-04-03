@@ -1,4 +1,3 @@
-Ficheros.ExcepcionPersonalizada: Error. El archivo de entrada no se ha encontrado.
-
-	at Ficheros.GestionarFicheros.rutaEntrada(GestionarFicheros.java:88)
-	at Ficheros.GestionarFicheros.main(GestionarFicheros.java:32)
+2020-04-03 16:00:37.893
+Error. El archivo de entrada no se ha encontrado.
+[Ficheros.GestionarFicheros.rutaEntrada(GestionarFicheros.java:139), Ficheros.GestionarFicheros.main(GestionarFicheros.java:33)]

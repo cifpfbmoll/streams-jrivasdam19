@@ -24,7 +24,8 @@ public class GestionarFicheros {
             System.out.println("1.- Leer y escribir byte a byte.");
             System.out.println("2.- Leer y escribir carácter a carácter.");
             System.out.println("3.- Leer y escribir con buffers.");
-            System.out.println("4.- Salir.");
+            System.out.println("4.- Tratamiento de objetos.");
+            System.out.println("5.- Salir.");
             int opcion = Integer.parseInt(lector.nextLine());
             switch (opcion) {
                 case 1:
@@ -39,7 +40,10 @@ public class GestionarFicheros {
                     } catch (ExcepcionPersonalizada ex) {
                         System.out.println("");
                         System.out.println(ex.getMessage());
-                        ex.registrarError(ex.getMessage(),ex);
+                        ex.registrarError(ex.getMessage(), ex);
+                    } catch (ExcepcionInformativa ex){
+                        System.out.println(ex.getMensaje());
+                        rutaSalida();
                     }
                     break;
                 case 2:
@@ -52,7 +56,10 @@ public class GestionarFicheros {
                     } catch (ExcepcionPersonalizada ex) {
                         System.out.println("");
                         System.out.println(ex.getMessage());
-                        ex.registrarError(ex.getMessage(),ex);
+                        ex.registrarError(ex.getMessage(), ex);
+                    }catch (ExcepcionInformativa ex){
+                        System.out.println(ex.getMensaje());
+                        rutaSalida();
                     }
                     break;
                 case 3:
@@ -65,14 +72,67 @@ public class GestionarFicheros {
                     } catch (ExcepcionPersonalizada ex) {
                         System.out.println("");
                         System.out.println(ex.getMessage());
-                        ex.registrarError(ex.getMessage(),ex);
+                        ex.registrarError(ex.getMessage(), ex);
+                    }catch (ExcepcionInformativa ex){
+                        System.out.println(ex.getMensaje());
+                        rutaSalida();
                     }
                     break;
                 case 4:
+                    iniciarSubmenu();
+                    break;
+                case 5:
                     salir = true;
                     break;
                 default:
                     System.out.println("Error. Opcion incorrecta.");
+                    break;
+            }
+        }
+    }
+
+    public static void iniciarSubmenu() {
+        Scanner lector = new Scanner(System.in);
+        ArrayList<Pelicula> listaPeliculas = new ArrayList<Pelicula>();
+        boolean salir = false;
+        while (!salir) {
+            System.out.println("1.- Lectura línea a línea y escritura con objetos.");
+            System.out.println("2.- Lectura de objetos y escritura de objetos.");
+            System.out.println("3.- Lectura de objetos y escritura por consola.");
+            System.out.println("4.- Lectura por consola y escritura de objetos.");
+            System.out.println("5.- Volver al menú principal.");
+            int opcion = Integer.parseInt(lector.nextLine());
+            switch (opcion) {
+                case 1:
+                    try {
+                        File ficheroEntrada = rutaEntrada();
+                        File ficheroSalida = rutaSalida();
+                        String textoLeido = LeerFicheroLinea(ficheroEntrada);
+                        anyadirPeliculas(textoLeido, listaPeliculas);
+                        escribirObjetos(listaPeliculas, ficheroSalida);
+                    } catch (Exception ex) {
+                        System.out.println("Error al leer el archivo");
+                    }
+                    /*catch (ExcepcionPersonalizada ex) {
+                        System.out.println("");
+                        System.out.println(ex.getMessage());
+                        ex.registrarError(ex.getMessage(), ex);
+                    }*/
+                    break;
+                case 2:
+                    //objeto objeto
+                    break;
+                case 3:
+                    //objeto consola
+                    break;
+                case 4:
+                    //consola objeto
+                    break;
+                case 5:
+                    salir = true;
+                    break;
+                default:
+                    System.out.println("Error. Opción incorrecta.");
                     break;
             }
         }
@@ -90,14 +150,14 @@ public class GestionarFicheros {
         return ficheroEntrada;
     }
 
-    public static File rutaSalida() throws ExcepcionPersonalizada {
+    public static File rutaSalida() throws ExcepcionInformativa {
         Scanner lector = new Scanner(System.in);
         System.out.println("Introduzca el nombre del archivo de salida.");
         String rutaSalida = lector.nextLine() + ".txt";
         File ficheroSalida = new File(rutaSalida);
         boolean existe = ficheroSalida.exists();
         if (!existe) {
-            throw new ExcepcionPersonalizada(002);
+            throw new ExcepcionInformativa();
         }
         return ficheroSalida;
     }
@@ -116,13 +176,11 @@ public class GestionarFicheros {
                 if (contador >= ATRIBUTOPELI.length) {
                     contador = 0;
                 }
-
             } else if (((char) unByte) == '{') {
                 destino.write(TITULOPELI.getBytes());
             } else {
                 destino.write(unByte);
             }
-
         } while (unByte != -1);
         destino.write(PIE.getBytes());
     }
@@ -183,14 +241,94 @@ public class GestionarFicheros {
                     }
                 }
                 escritorMejorado.write(lineaLeida, 0, lineaLeida.length());
-
             } else {
                 eof = true;
             }
-
         }
         escritorMejorado.write(PIE, 0, PIE.length());
         lectorMejorado.close();
         escritorMejorado.close();
     }
+
+    public static String LeerFicheroLinea(File entrada)
+            throws ClassNotFoundException, IOException {
+        BufferedReader lectorMejorado = new BufferedReader(new FileReader(entrada));
+        boolean eof = false;
+        String textoLeido = "";
+        String lineaLeida;
+        while (!eof) {
+            lineaLeida = lectorMejorado.readLine();
+            if (lineaLeida != null) {
+                textoLeido += lineaLeida;
+            } else {
+                eof = true;
+            }
+        }
+        lectorMejorado.close();
+        return textoLeido;
+    }
+
+    public static String[] separarString(String textoLeido, char x) {
+        ArrayList<String> textoSeparado = new ArrayList<String>();
+        String seccionTexto = "";
+        for (int i = 0; i < textoLeido.length(); i++) {
+            if (textoLeido.charAt(i) == x) {
+                textoSeparado.add(seccionTexto);
+                seccionTexto = "";
+            } else {
+                seccionTexto += textoLeido.charAt(i);
+            }
+        }
+        return textoSeparado.toArray(new String[0]);
+    }
+
+    public static void anyadirPeliculas(String textoLeido, ArrayList<Pelicula> listaPeliculas) {
+        //String datosPelicula = "";
+        for (String pelicula : separarString(textoLeido, '{')) {
+            Pelicula p = new Pelicula();
+            int contador = 0;
+            for (String atributo : separarString(pelicula, '#')) {
+                switch (contador) {
+                    case 0:
+                        p.setTitulo(atributo);
+                        break;
+                    case 1:
+                        p.setAnyo(atributo);
+                        break;
+                    case 2:
+                        p.setDirector(atributo);
+                        break;
+                    case 3:
+                        p.setDuracion(atributo);
+                        break;
+                    case 4:
+                        p.getSinopsis();
+                        break;
+                    case 5:
+                        p.setReparto(atributo);
+                        break;
+                    case 6:
+                        p.setSesion(atributo);
+                        break;
+                    default:
+                        System.out.println("Error. Hay más datos de los controlados.");
+                        break;
+                }
+                contador++;
+            }
+            //datosPelicula += p.atributosPelicula();
+            listaPeliculas.add(p);
+        }
+        //return datosPelicula;
+    }
+
+    public static void escribirObjetos(ArrayList<Pelicula> listaPeliculas, File ficheroSalida) throws IOException {
+        ObjectOutputStream destino = new ObjectOutputStream(new FileOutputStream(ficheroSalida));
+        for (Pelicula p : listaPeliculas) {
+            destino.writeObject(p);
+        }
+        destino.close();
+
+    }
+
 }
