@@ -95,5 +95,26 @@ public class Pelicula implements Serializable {
                 + "Reparto: " + this.getReparto() + "\n"
                 + "Sesión: " + this.getSesion() + "\n" + "--------------------------";
     }
+    
+    public static Pelicula registrarPelicula(){
+        Pelicula p=new Pelicula();
+        Scanner lector=new Scanner(System.in);
+        System.out.println("Introduzca el título.");
+        p.setTitulo(lector.nextLine());
+        System.out.println("Introduzca el año.");
+        p.setAnyo(lector.nextLine());
+        System.out.println("Introduzca el nombre del director.");
+        p.setDirector(lector.nextLine());
+        System.out.println("Introduzca la duración en minutos.");
+        p.setDuracion(duracion);
+        System.out.println("Introduzca la sinopsis.");
+        p.setSinopsis(lector.nextLine());
+        System.out.println("Introduzca el reparto.");
+        p.setReparto(lector.nextLine());
+        System.out.println("Introduzca la hora de la sesión.");
+        p.setSesion(lector.nextLine());
+        return p;
+        
+    }
 
 }

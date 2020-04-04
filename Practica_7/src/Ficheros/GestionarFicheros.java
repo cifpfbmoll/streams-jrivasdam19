@@ -17,6 +17,8 @@ public class GestionarFicheros {
     public static void main(String[] args) {
 
         Scanner lector = new Scanner(System.in);
+        File ficheroEntrada = new File("");
+        File ficheroSalida = new File("");
         boolean salir = false;
         while (!salir) {
             System.out.println("");
@@ -30,8 +32,8 @@ public class GestionarFicheros {
             switch (opcion) {
                 case 1:
                     try {
-                        File ficheroEntrada = rutaEntrada();
-                        File ficheroSalida = rutaSalida();
+                        ficheroEntrada = rutaEntrada();
+                        ficheroSalida = rutaSalida();
                         redactarFicheroByte(ficheroEntrada, ficheroSalida);
                     } catch (IOException excepcion) {
                         System.out.println("");
@@ -43,13 +45,13 @@ public class GestionarFicheros {
                         ex.registrarError(ex.getMessage(), ex);
                     } catch (ExcepcionInformativa ex) {
                         System.out.println(ex.getMensaje());
-                        rutaSalida();
+                        ficheroSalida = rutaSalida();
                     }
                     break;
                 case 2:
                     try {
-                        File ficheroEntrada = rutaEntrada();
-                        File ficheroSalida = rutaSalida();
+                        ficheroEntrada = rutaEntrada();
+                        ficheroSalida = rutaSalida();
                         redactarFicheroCaracter(ficheroEntrada, ficheroSalida);
                     } catch (IOException ex) {
                         System.out.println("Error al leer el archivo");
@@ -59,13 +61,13 @@ public class GestionarFicheros {
                         ex.registrarError(ex.getMessage(), ex);
                     } catch (ExcepcionInformativa ex) {
                         System.out.println(ex.getMensaje());
-                        rutaSalida();
+                        ficheroSalida = rutaSalida();
                     }
                     break;
                 case 3:
                     try {
-                        File ficheroEntrada = rutaEntrada();
-                        File ficheroSalida = rutaSalida();
+                        ficheroEntrada = rutaEntrada();
+                        ficheroSalida = rutaSalida();
                         redactarFicheroLinea(ficheroEntrada, ficheroSalida);
                     } catch (IOException ex) {
                         System.out.println("Error al leer el archivo");
@@ -75,7 +77,7 @@ public class GestionarFicheros {
                         ex.registrarError(ex.getMessage(), ex);
                     } catch (ExcepcionInformativa ex) {
                         System.out.println(ex.getMensaje());
-                        rutaSalida();
+                        ficheroSalida = rutaSalida();
                     }
                     break;
                 case 4:
@@ -93,7 +95,10 @@ public class GestionarFicheros {
 
     public static void iniciarSubmenu() {
         Scanner lector = new Scanner(System.in);
+        File ficheroEntrada = new File("");
+        File ficheroSalida = new File("");
         ArrayList<Pelicula> listaPeliculas = new ArrayList<Pelicula>();
+        ArrayList<Pelicula> listaPeliculasLeidas = new ArrayList<Pelicula>();
         boolean salir = false;
         while (!salir) {
             System.out.println("1.- Lectura línea a línea y escritura con objetos.");
@@ -104,29 +109,68 @@ public class GestionarFicheros {
             int opcion = Integer.parseInt(lector.nextLine());
             switch (opcion) {
                 case 1:
+
                     try {
-                        File ficheroEntrada = rutaEntrada();
-                        File ficheroSalida = rutaSalida();
+                        ficheroEntrada = rutaEntrada();
+                        ficheroSalida = rutaSalida();
                         String textoLeido = LeerFicheroLinea(ficheroEntrada);
                         anyadirPeliculas(textoLeido, listaPeliculas);
                         escribirObjetos(listaPeliculas, ficheroSalida);
                     } catch (Exception ex) {
                         System.out.println("Error al leer el archivo");
                     }
-                    /*catch (ExcepcionPersonalizada ex) {
+                    break;
+                case 2:
+                    try {
+                        ficheroEntrada = rutaEntrada();
+                        ficheroSalida = rutaSalida();
+                        listaPeliculasLeidas = leerObjetos(ficheroEntrada);
+                        escribirObjetos(listaPeliculasLeidas, ficheroSalida);
+                    } catch (IOException ex) {
+                        System.out.println("Error al leer el fichero.");
+                    } catch (ExcepcionPersonalizada ex) {
                         System.out.println("");
                         System.out.println(ex.getMessage());
                         ex.registrarError(ex.getMessage(), ex);
-                    }*/
-                    break;
-                case 2:
-                    //objeto objeto
+                    } catch (ExcepcionInformativa ex) {
+                        System.out.println(ex.getMensaje());
+                        ficheroSalida = rutaSalida();
+                    }
                     break;
                 case 3:
-                    //objeto consola
+                    try {
+                        ficheroEntrada = rutaEntrada();
+                        ficheroSalida = rutaSalida();
+                        listaPeliculasLeidas = leerObjetos(ficheroEntrada);
+                        escribirConsola(listaPeliculasLeidas);
+                    } catch (ExcepcionPersonalizada ex) {
+                        System.out.println("");
+                        System.out.println(ex.getMessage());
+                        ex.registrarError(ex.getMessage(), ex);
+                    } catch (ExcepcionInformativa ex) {
+                        System.out.println(ex.getMensaje());
+                        ficheroSalida = rutaSalida();
+                    }
                     break;
                 case 4:
-                    //consola objeto
+                    try {
+                        ficheroEntrada = rutaEntrada();
+                        ficheroSalida = rutaSalida();
+                        System.out.println("¿Cuántas películas quiere registrar?");
+                        for (int i = 0; i <= Integer.parseInt(lector.nextLine()); i++) {
+                            listaPeliculas.add(Pelicula.registrarPelicula());
+                        }
+                        escribirObjetos(listaPeliculas, ficheroSalida);
+                    } catch (IOException ex) {
+                        System.out.println("Error al leer el fichero.");
+                    } catch (ExcepcionPersonalizada ex) {
+                        System.out.println("");
+                        System.out.println(ex.getMessage());
+                        ex.registrarError(ex.getMessage(), ex);
+                    } catch (ExcepcionInformativa ex) {
+                        System.out.println(ex.getMensaje());
+                        ficheroSalida = rutaSalida();
+                    }
                     break;
                 case 5:
                     salir = true;
@@ -325,18 +369,27 @@ public class GestionarFicheros {
         destino.close();
     }
 
-    public static void leerObjetos(File ficheroEntrada) {
+    public static ArrayList<Pelicula> leerObjetos(File ficheroEntrada) {
         ObjectInputStream ois = null;
+        ArrayList<Pelicula> listaPeliculasLeidas = new ArrayList<Pelicula>();
         try {
             ObjectInputStream origen = new ObjectInputStream(new FileInputStream(ficheroEntrada));
             while (true) {
-                ArrayList<Pelicula> listaPeliculas = (ArrayList<Pelicula>) origen.readObject();
+                listaPeliculasLeidas = (ArrayList<Pelicula>) origen.readObject();
                 origen.close();
+
             }
         } catch (IOException ex) {
             System.out.println("");
         } catch (ClassNotFoundException classex) {
             System.out.println("");
+        }
+        return listaPeliculasLeidas;
+    }
+
+    public static void escribirConsola(ArrayList<Pelicula> listaPeliculasLeidas) {
+        for (Pelicula p : listaPeliculasLeidas) {
+            System.out.println(p);
         }
     }
 
